@@ -1,0 +1,163 @@
+\iffalse
+\fi
+{\color{red!90!black}
+\begin{verbatim}
+  \newcondition{defined}{}
+  \newcondition{paper}{a4,a5,b5}
+  \setcondition{paper={a5,b5}}
+\end{verbatim}
+}
+
+{
+\newcondition{defined}{}
+\newcondition{paper}{a4,a5,b5}
+\setcondition{paper={a5,b5}}
+\def\cdcmdtest#1->#2 /{\textcolor{red!90!black}{\detokenize{#1}}:~ #1 \newline}
+\parindent=0pt\ttfamily
+\cdcmdtest\conditionif[*]{t}{f}->t /
+\cdcmdtest\conditionif[defined]{t}{f}->t /
+\cdcmdtest\conditionif[defined=]{t}{f}->f /
+\cdcmdtest\conditionif[defined=*]{t}{f}->t /
+\cdcmdtest\conditionif[defined=a]{t}{f}->f /
+\cdcmdtest\conditionif[paper={a5,a0},undefined]{t}{f}->t /
+
+\cdcmdtest\conditionif*[*]{t}{f}->t /
+\cdcmdtest\conditionif*[defined]{t}{f}->t /
+\cdcmdtest\conditionif*[defined={,,}]{t}{f}->f /
+\cdcmdtest\conditionif*[defined=*]{t}{f}->t /
+\cdcmdtest\conditionif*[defined=a]{t}{f}->f /
+\cdcmdtest\conditionif*[paper={a5,a0},undefined]{t}{f}->f /
+\cdcmdtest\conditionif*[*,undefined]{t}{f}->f /
+\cdcmdtest\conditionif*[paper={a5,b5}]{t}{f}->t /
+\cdcmdtest\conditionif*[paper={a5,,b5}]{t}{f}->t /
+\cdcmdtest\conditionif*[paper={a5,b6,a5}]{t}{f}->f /
+\cdcmdtest\conditionif*[paper={a5,{ },45}]{t}{f}->f /
+\cdcmdtest\conditionif*[*,defined,paper={a5,b5}]{t}{f}->t /
+}
+
+{\color{red!90!black}
+\begin{verbatim}
+  \def\truetext{true} \def\falsetext{false}
+  \edef\testa{\econditionif[*]{true}{false}}
+  \ifx\testa\truetext t\else f\fi
+  \ifx\testa\falsetext t\else f\fi
+  \strcmp {\econditionif[*]{true}{false}} {true}
+  \strcmp {\econditionif[*]{true}{false}} {false}
+  \strcmp {\testa} {\truetext}
+  \strcmp {\testa} {\falsetext}
+\end{verbatim}
+}
+\def\truetext{true} \def\falsetext{false}
+\edef\testa{\econditionif[*]{true}{false}}
+\ifx\testa\truetext t\else f\fi
+\ifx\testa\falsetext t\else f\fi
+\strcmp{\econditionif[*]{true}{false}}{true}
+\strcmp{\econditionif[*]{true}{false}}{false}
+\strcmp{\testa}{\truetext}
+\strcmp{\testa}{\falsetext}
+
+{\color{red!90!black}
+\begin{verbatim}
+  \conditioncase{
+    {paper=a3} {a3}
+    {paper=a4} {a4}
+    {paper,defined} {pd}
+  }
+\end{verbatim}
+}
+\conditioncase{
+  {paper=a3} {a3}
+  {paper=a4} {a4}
+  {paper,defined} {pd}
+}
+
+{\color{red!90!black}
+\begin{verbatim}
+  \conditioncaseTF{
+    {paper=a3} {a3}
+    {paper=a4} {a4}
+    {paper,defined} {pd}
+  }{true}{false}
+\end{verbatim}
+}
+\conditioncaseTF{
+  {paper=a3} {a3}
+  {paper=a4} {a4}
+  {paper,defined} {pd}
+}{true}{false}
+
+{\color{red!90!black}
+\begin{verbatim}
+  \conditioncase!{
+    {paper=a3} {a3}
+    {paper=a4} {a4}
+    {paper,defined} {pd}
+  }
+\end{verbatim}
+}
+\conditioncase!{
+  {paper=a3} {a3}
+  {paper=a4} {a4}
+  {paper,defined} {pd}
+}
+
+{\color{red!90!black}
+\begin{verbatim}
+  \conditioncaseTF!{
+    {paper=a3} {a3}
+    {paper=a4} {a4}
+    {paper,defined} {pd}
+  }{true}{false}
+\end{verbatim}
+}
+\conditioncaseTF!{
+  {paper=a3} {a3}
+  {paper=a4} {a4}
+  {paper,defined} {pd}
+}{true}{false}
+
+{\color{red!90!black}
+\begin{verbatim}
+  \newconditioncommand\longprotectedcdcmd{longprotectedcdcmd}
+  \newconditioncommand\longprotectedcdcmdi[1]{longprotectedcdcmdi<#1>}
+  \newconditioncommand\longprotectedcdcmdio[1][DFT]{longprotectedcdcmdio<#1>}
+  \newconditioncommand*\shortprotectedcdcmd{shortprotectedcdcmd}
+  \newconditioncommand*\shortprotectedcdcmdi[1]{shortprotectedcdcmdi<#1>}
+  \newconditioncommand*\shortprotectedcdcmdio[1][DFT]{shortprotectedcdcmdio<#1>}
+
+  \setcondition{paper={a4,a5}}
+  \longprotectedcdcmd{*}
+  \longprotectedcdcmdi{*}{1\par arg}
+  \longprotectedcdcmdio{*}
+  \longprotectedcdcmdio{*}[1opt]
+  \longprotectedcdcmdio{paper=a4}[1opt a4]
+  \longprotectedcdcmdio+{paper={a4,a7}}[1opt a4a7]
+  \shortprotectedcdcmd{*}
+  \shortprotectedcdcmdi{*}{1\par arg}
+  \shortprotectedcdcmdio{*}
+  \shortprotectedcdcmdio{*}[1opt]
+  \shortprotectedcdcmdio{paper=a4}[1opt a4]
+  \shortprotectedcdcmdio+{paper={a4,a7}}[1opt a4a7]
+\end{verbatim}
+}
+\newconditioncommand\longprotectedcdcmd{longprotectedcdcmd}
+\newconditioncommand\longprotectedcdcmdi[1]{longprotectedcdcmdi<#1>}
+\newconditioncommand\longprotectedcdcmdio[1][DFT]{longprotectedcdcmdio<#1>}
+\newconditioncommand*\shortprotectedcdcmd{shortprotectedcdcmd}
+\newconditioncommand*\shortprotectedcdcmdi[1]{shortprotectedcdcmdi<#1>}
+\newconditioncommand*\shortprotectedcdcmdio[1][DFT]{shortprotectedcdcmdio<#1>}
+
+{\ttfamily\setcondition{paper={a4,a5}}\obeylines
+\longprotectedcdcmd{*}
+\longprotectedcdcmdi{*}{1\par arg}
+\longprotectedcdcmdio{*}
+\longprotectedcdcmdio{*}[1opt]
+\longprotectedcdcmdio{paper=a4}[1opt a4]
+\longprotectedcdcmdio+{paper={a4,a7}}[1opt a4a7]
+\shortprotectedcdcmd{*}
+\shortprotectedcdcmdi{*}{1arg}
+\shortprotectedcdcmdio{*}
+\shortprotectedcdcmdio{*}[1opt]
+\shortprotectedcdcmdio{paper=a4}[1opt a4]
+\shortprotectedcdcmdio+{paper={a4,a7}}[1opt a4a7]
+}

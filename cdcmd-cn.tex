@@ -1,0 +1,175 @@
+\documentclass{ctxdoc}
+\usepackage{xcolor}
+\usepackage{cdcmd}
+\title{\pkg{cdcmd}，一跟可扩展的条件化命令宏包}
+\author{雾月, Longaster\thanks{Email: \url{longaster@163.com}}}
+\date{\today v1.0}
+
+
+\begin{document}
+\maketitle
+
+\pkg{cdcmd} 提供了条件化命令的方式，与 \pkg{styledcmd} 宏包不同，该宏包的某些命令是可 \verb|f-|扩展的，这在某些情况下是有用的。
+
+\section{主要接口}
+
+\begin{function}{\newcondition,\setcondition,\clearcondition}
+	\begin{syntax}
+		\cs{newcondition} \marg{identifier} \marg{id(s)}
+		\cs{setcondition} + \marg{identifier=ids list}
+        \cs{clearcondition}\oarg{identifier(s)}
+	\end{syntax}
+	\cs{newcondition} 定义 \meta{identifier} 的 \meta{ids}。\meta{identifier} 两侧的空格将被移除。
+
+	\cs{setcondition} 设置在当前组中有效的 \meta{id}。不带 \verb|+| 的版本将局部地清除原先设置的 \meta{identifier} 的ids。
+
+    \meta{identifier}、\meta{id} 均不能为 \verb|*|。
+    
+    \cs{clearcondition} 局部地清除指定的 \meta{identifiers}，默认值为 \verb|*|，即清除所有。
+\end{function}
+
+\begin{function}{
+	\conditionif,\conditioncmd,
+	\econditionif,\econditioncmd,
+}
+	\begin{syntax}
+		\cs{conditionif} * \oarg{identifier=ids list} \marg{true} \marg{false}
+		\cs{conditioncmd} * \oarg{identifier=ids list} \marg{material}
+	\end{syntax}
+	当 \meta{identifier=ids list} 的组合使得当前条件为真时，使用 \meta{true}、\meta{material}，为假时，使用 \meta{false}。
+
+	不带 \verb|*| 的版本为 \verb|any|，带 \verb|*| 的为 \verb|all|。详见下方的说明。
+
+	\cs{econditionif}、\cs{econditioncmd} 为可 \verb|f|-扩展的。
+	\cs{conditionif}、\cs{conditioncmd} 为不可扩展（\tn{protected}）的。
+
+	\meta{identifier=ids list} 默认值为 \verb|*|，即在默认情况下将输出 \meta{true}、\meta{material}。
+\end{function}
+
+\begin{function}{
+	\conditioncase,\conditioncaseTF,
+	\econditioncase,\econditioncaseTF
+}
+	\begin{syntax}
+        \cs{conditioncaseTF} * !
+        ~~\{
+        ~~~~\marg{identifier-ids list case_1} \marg{code_1}
+        ~~~~\marg{identifier-ids list case_2} \marg{code_2}
+        ~~~~...
+        ~~~~\marg{identifier-ids list case_n} \marg{code_n}
+        ~~\}
+        ~~\marg{true code}
+        ~~\marg{false code}
+	\end{syntax}
+	\verb|!| 未给出时，依次计算 \meta{identifier-ids list cases}，直到遇到第一个 \meta{case} 为\emph{真}，输出对应的 \meta{code} 与 \meta{true code}，若未成功匹配，则输出 \meta{false code}。
+
+	\verb|!| 给出时，依次计算 \meta{identifier-ids list cases}，直到遇到第一个 \meta{case} 为\emph{假}，输出对应的 \meta{code} 与 \meta{true code}，若未成功匹配，则输出 \meta{false code}。
+\end{function}
+
+\begin{texnote}
+	对 \meta{ids} 的处理使用的是 \LaTeX3 的 \cs{clist_map_...}，它们将形如 \verb|{,}| 的list视为空，形如 \verb|{{},}| 视为非空。
+\end{texnote}
+
+假定已经使用了如下命令：
+\begin{verbatim}
+  \newcondition{defined}{}
+  \newcondition{paper}{a4,a5,b5}
+  \setcondition{paper={a5,b5}}
+\end{verbatim}
+即 \verb|defined| 已被 \cs{newcondition} 定义且无id，\verb|paper| 已被 \cs{newcondition} 定义且有 \verb|a4,b5,a5| 三个id，其中 \verb|a5,b5| 已被设置，\verb|undefined| 未被定义。
+
+\verb|any| 在满足如下条件之一为真：
+\begin{enumerate}
+    \item \meta{identifier=ids list} 为 \verb|*|；
+    \item \meta{identifier=ids list} 为一个已被定义的 \meta{identifier}，且未给出 \meta{id} 值 ，即 \meta{identifier=ids list} 为 \verb|paper| 或 \verb|defined|；
+    \item \meta{identifier=ids list} 为一个已被定义的 \meta{identifier}，且 \meta{id} 值为 \verb|*|，即 \meta{identifier=ids list} 为 \verb|paper=*| 或 \verb|defined=*|；
+    \item \meta{identifier=ids list} 为一个已被定义的 \meta{identifier}，且给出的 \meta{ids} 中\emph{有}被设置的id，即 \meta{identifier=ids list} 为 \verb|paper=b5| 或 \verb|paper={a5,b5}| 或 \verb|paper={a5,a0}| （\verb|a0| 未设置，但 \verb|a5| 已设置）。注意 \verb|defined| 给出的任何除 \verb|*| 之外的 \meta{ids} 值都将使得条件为假，即使是空值（\verb|defined=|）；
+    \item \meta{identifier=ids list} 中\emph{任意一项}满足如上4点之一，如 \verb|paper={a5,a0},undefined|。
+\end{enumerate}
+
+\verb|all| 在满足如下条件之一为真：
+\begin{enumerate}
+    \item \meta{identifier=ids list} 为 \verb|*|；
+    \item \meta{identifier=ids list} 为一个已被定义的 \meta{identifier}，且未给出 \meta{id} 值 ，即 \meta{identifier=ids list} 为 \verb|paper| 或 \verb|defined|；
+    \item \meta{identifier=ids list} 为一个已被定义的 \meta{identifier}，且 \meta{id} 值为 \verb|*|，即 \meta{identifier=ids list} 为 \verb|paper=*| 或 \verb|defined=*|；
+    \item \meta{identifier=ids list} 为一个已被定义的 \meta{identifier}，且给出的 \meta{ids} \emph{均}被设置，即 \meta{identifier=ids list} 为 \verb|paper=b5| 或 \verb|paper={a5,b5}|。注意 \verb|defined| 给出的任何除 \verb|*| 之外的 \meta{id} 值都将使得条件为假，即使是空值（\verb|defined=|）；
+    \item \meta{identifier=ids list} 中\emph{所有项均}满足如上4点之一，如 \verb|paper={a5,b5},defined|。
+\end{enumerate}
+
+\begin{function}{
+	\newconditioncommand,
+	\renewconditioncommand,
+	\provideconditioncommand,
+	\declareconditioncommand,
+	\neweconditioncommand,
+	\reneweconditioncommand,
+	\provideeconditioncommand,
+	\declareeconditioncommand,
+}
+	\begin{syntax}
+		\cs{newconditioncommand} * \meta{function} \oarg{arg nums} \oarg{default} \marg{code}
+		\cs{neweconditioncommand} * \meta{function} \oarg{arg nums} \marg{code}
+	\end{syntax}
+	这些命令与 \LaTeXe{} 的命令相对应。\cs{newconditioncommand} 命令正如 \LaTeXe{} 的 \tn{newcommand} 命令。它们将定义形如 \verb|\foo+|\marg{identifier=ids list}\meta{args} 的命令。定义的命令的可选参数不可包含 \tn{par}。
+
+	\cs{neweconditioncommand} 命令定义的是可扩展的命令，不可设置默认参数。但可使用 \pkg{xparse} 形式的命令定义可设置默认值的参数。
+	
+	不带 |*| 的版本定义的命令是 \tn{long} 的。即其参数可以包含多个段落。
+\end{function}
+
+\begin{function}{
+    \NewConditionCommand ,
+    \RenewConditionCommand ,
+    \ProvideConditionCommand ,
+    \DeclareConditionCommand ,
+    \NewExpandableConditionCommand ,
+    \RenewExpandableConditionCommand ,
+    \ProvideExpandableConditionCommand ,
+    \DeclareExpandableConditionCommand ,
+}
+	\begin{syntax}
+		\cs{NewConditionCommand} \meta{function} \marg{arg spec} \marg{code}
+	\end{syntax}
+	这些命令与 \pkg{xparse} 宏包的命令相对应。它们将定义形如 \verb|\foo+|\marg{identifier=ids list}\meta{args} 的命令。
+
+	\meta{arg spec} 应符合 \pkg{xparse} 宏包相应命令的规则。
+
+	其中带 \verb|+| 的命令为 |all|，不带 \verb|+| 的为 |any|。\meta{identifier=ids list} 的含义如上所述。\meta{args} 为
+	由 \meta{arg spec} 定义的参数。
+\end{function}
+
+
+\section{例子}
+
+\input{cdcmd-test.tex}
+
+
+\section{For package author}
+
+\begin{function}[pTF]{
+  \cdcmd_any_if:n,
+  \cdcmd_all_if:n,
+  \cdcmd_any_if:o,
+  \cdcmd_all_if:o,
+  \cdcmd_any_if:V,
+  \cdcmd_all_if:V,
+  \cdcmd_any_if:f,
+  \cdcmd_all_if:f,
+}
+  它们的含义应该是显然的。
+\end{function}
+
+\begin{function}[TF]{
+  \cdcmd_any_case_true:n,
+  \cdcmd_any_case_false:n,
+  \cdcmd_all_case_true:n,
+  \cdcmd_all_case_false:n,
+}
+  它们的含义应该是显然的。
+\end{function}
+
+\section{实现}
+
+见 \href{./cdcmd.pdf}{cdcmd.pdf}
+
+\end{document}
