@@ -1,5 +1,7 @@
 %\iffalse meta-comment 
+%<*internal>
 \iffalse
+%</internal>
 %<*readme>
 Abstract
 ----
@@ -35,7 +37,9 @@ This work has the LPPL maintenance status `maintained'.
 The Current Maintainers of this work are Wenjian Chern (Longaster).
 --------------------------------------------------------------------------
 %</readme>
+%<*internal>
 \fi
+%</internal>
 %\fi
 %\iffalse 
 %<package>\NeedsTeXFormat{LaTeX2e}
@@ -70,7 +74,7 @@ The Current Maintainers of this work are Wenjian Chern (Longaster).
 % \maketitle
 %
 % \begin{documentation}
-% \ifdefined\pdfstrcmp\let\strcmp\pdfstrcmp\fi
+% \ExplSyntaxOn \let\strcmp\tex_strcmp:D \ExplSyntaxOff
 %
 % \begin{abstract}
 % \pkg{cdcmd} is a package that allows you define `polymorphic' command. Like \pkg{styledcmd} package,

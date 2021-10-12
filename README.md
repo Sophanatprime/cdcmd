@@ -1,4 +1,3 @@
-\iffalse
 Abstract
 ----
 The `cdcmd' package provides some conditional command, just like `styledcmd'
@@ -32,4 +31,3 @@ This work has the LPPL maintenance status `maintained'.
 
 The Current Maintainers of this work are Wenjian Chern (Longaster).
 --------------------------------------------------------------------------
-\fi
