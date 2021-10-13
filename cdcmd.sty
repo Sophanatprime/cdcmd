@@ -27,7 +27,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{expl3}[2021/05/11]
-\GetIdInfo$Id: cdcmd.dtx 1.0 2021/10/12 +0815 Longaster$
+\GetIdInfo$Id: cdcmd.dtx 1.0.1 2021/10/13 +0815 Longaster$
   {Expandable Conditional Command In LaTeX2e}
 \ProvidesExplPackage{cdcmd}
   {\ExplFileDate}{\ExplFileVersion}{\ExplFileDescription}
@@ -282,17 +282,33 @@
       { \cdcmd_any_if:nTF }
         {#2} {#3} { }
   }
-\NewExpandableDocumentCommand \econditioncase { s +m }
+\NewExpandableDocumentCommand \econditioncase { s t! +m }
   {
-    \IfBooleanTF {#1}
-      { \cdcmd_all_case:n {#2} }
-      { \cdcmd_any_case:n {#2} }
+    \IfBooleanTF {#2}
+      {
+        \IfBooleanTF {#1}
+          { \cdcmd_all_case_false:n {#3} }
+          { \cdcmd_any_case_false:n {#3} }
+      }
+      {
+        \IfBooleanTF {#1}
+          { \cdcmd_all_case_true:n {#3} }
+          { \cdcmd_any_case_true:n {#3} }
+      }
   }
-\NewExpandableDocumentCommand \econditioncaseTF { s +m }
+\NewExpandableDocumentCommand \econditioncaseTF { s t! +m }
   {
-    \IfBooleanTF {#1}
-      { \cdcmd_all_case:nTF {#2} }
-      { \cdcmd_any_case:nTF {#2} }
+    \IfBooleanTF {#2}
+      {
+        \IfBooleanTF {#1}
+          { \cdcmd_all_case_false:nTF {#3} }
+          { \cdcmd_any_case_false:nTF {#3} }
+      }
+      {
+        \IfBooleanTF {#1}
+          { \cdcmd_all_case_true:nTF {#3} }
+          { \cdcmd_any_case_true:nTF {#3} }
+      }
   }
 \NewDocumentCommand \conditionif { s O{*} +m +m }
   {
